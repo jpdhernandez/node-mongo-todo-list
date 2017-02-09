@@ -6,13 +6,13 @@ MongoClient.connect("mongodb://localhost:27017/todo_app", (err, db) => {
     }
     console.log("Connected to MongoDB server");
 
-    // db.collection("todos").find({ completed: false }).toArray()
-    //     .then((docs) => {
-    //         console.log("todos");
-    //         console.log(JSON.stringify(docs, undefined, 2));
-    //     }, (err) => {
-    //         console.log("Unable to fetch todos", err);
-    //     });
+    db.collection("todos").find({ completed: false }).toArray()
+        .then((docs) => {
+            console.log("todos");
+            console.log(JSON.stringify(docs, undefined, 2));
+        }, (err) => {
+            console.log("Unable to fetch todos", err);
+        });
 
     // db.collection("todos").find({ _id: ObjectId("589c329b8af28422047c6ab1") }).toArray()
     //     .then((docs) => {
@@ -36,11 +36,11 @@ MongoClient.connect("mongodb://localhost:27017/todo_app", (err, db) => {
     //         console.log("Unable to fetch users", err);
     //     });
 
-    db.collection("users").find({ name: "Julian" }).toArray()
-        .then((docs) => {
-            console.log(JSON.stringify(docs, undefined, 2));
-        }, (err) => {
-            console.log("Unable to fetch users", err);
-        });
+    // db.collection("users").find({ name: "Julian" }).toArray()
+    //     .then((docs) => {
+    //         console.log(JSON.stringify(docs, undefined, 2));
+    //     }, (err) => {
+    //         console.log("Unable to fetch users", err);
+    //     });
     // db.close();
 });

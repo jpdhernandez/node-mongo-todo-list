@@ -1,0 +1,10 @@
+{
+  "name": "node-mongo-todo-list",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {},
+  "license": "MIT",
+  "dependencies": {
+    "mongodb": "^2.2.22"
+  }
+}

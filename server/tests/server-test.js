@@ -92,7 +92,7 @@ describe("GET /todos/:id", () => {
     });
 
     it("should return a 404 for non-ObjectId", (done) => {
-        const invalidId = "12345"
+        const invalidId = "12afdfh345"
         request(app)
             .get(`/todos/${invalidId}`)
             .expect(404)

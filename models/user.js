@@ -2,22 +2,23 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const TodoSchema = new Schema({
-    text: {
+    email: {
         type: String,
         required: true,
         minlength: 1,
         trim: true
     },
-    completed: {
-        type: Boolean,
-        default: false
+    password: {
+        type: String,
+        default: false,
+        require: true
     },
-    completedAt: {
-        type: Number,
-        default: null
+    joined: {
+        type: Date,
+        default: Date.now()
     }
 });
 
-const Todo = mongoose.model("todos", TodoSchema);
+const Todo = mongoose.model("users", TodoSchema);
 
 module.exports = Todo;

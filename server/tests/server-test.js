@@ -165,5 +165,4 @@ describe("PATCH /todos/:id", () => {
                 expect(res.body.todo.completedAt).toNotExist();
             }).end(done);
     });
-
 });

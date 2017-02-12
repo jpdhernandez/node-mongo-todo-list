@@ -6,7 +6,8 @@ const TodoSchema = new Schema({
         type: String,
         required: true,
         minlength: 1,
-        trim: true
+        trim: true,
+        runValidators: true
     },
     completed: {
         type: Boolean,

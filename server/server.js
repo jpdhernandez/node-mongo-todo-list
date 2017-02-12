@@ -58,7 +58,7 @@ app.delete("/todos/:id", (req, res) => {
             return res.sendStatus(404);
         }
 
-        res.send({ message: `Todo "${todo.text}" removed!` });
+        res.send({ todo });
     }).catch((err) => res.sendStatus(400));
 });
 

@@ -11,7 +11,9 @@ const todos = [{
     text: "First todo"
 }, {
     _id: new ObjectId(),
-    text: "Second todo"
+    text: "Second todo",
+    completed: false,
+    completedAt: 170212
 }];
 
 // Drop data and add seed data
@@ -133,4 +135,35 @@ describe("DELETE /todos/:id", () => {
             .expect(404)
             .end(done);
     });
+});
+
+describe("PATCH /todos/:id", () => {
+    it("should update a todo with id supplied", (done) => {
+        const newText = "Updated text";
+
+        request(app)
+            .patch(`/todos/${todos[0]._id.toHexString()}`)
+            .send({ text: newText, completed: true })
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.todo.text).toBe(newText);
+                expect(res.body.todo.completed).toBe(true);
+            }).end(done)
+    });
+
+    it("should clear completedAt when todo is not completed", (done) => {
+        const newText = "Yet another updated text";
+        const newCompleted = false;
+
+        request(app)
+            .patch(`/todos/${todos[1]._id.toHexString()}`)
+            .send({ text: newText, completed: false })
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.todo.text).toBe(newText);
+                expect(res.body.todo.completed).toBe(false);
+                expect(res.body.todo.completedAt).toNotExist();
+            }).end(done);
+    });
+
 });

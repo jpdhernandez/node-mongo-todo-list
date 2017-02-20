@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
+const Promise = require("bluebird");
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
@@ -38,10 +39,10 @@ const UserSchema = new Schema({
 });
 
 UserSchema.methods.toJSON = function() {
-    const user = this;
-    const userObject = user.toObject();
+  const user = this;
+  const userObject = user.toObject();
 
-    return _.pick(userObject, ["_id", "email"]);
+  return _.pick(userObject, ["_id", "email"]);
 };
 
 UserSchema.methods.generateAuthToken = function() {
@@ -53,9 +54,45 @@ UserSchema.methods.generateAuthToken = function() {
     access
   }, "secret").toString();
 
-  user.tokens.push({access, token});
+  user.tokens.push({ access, token });
 
   return user.save().then((data) => token);
+};
+
+// Asymmetric way returns does not work... it doesn't authenticate
+// UserSchema.statics.findByToken = function(token) {
+//   const User = this;
+
+//   return Promise.resolve(jwt.verify(token, "secret"))
+//     .then((err, decoded) => {
+//       if (err) {
+//         return Promise.reject();
+//       }
+
+//       return User.findOne({
+//         "_id": decoded._id,
+//         "tokens.token": token,
+//         "tokens.access": "auth"
+//       });
+//     });
+// };
+
+// Statics creates a Model method instead of an instance
+UserSchema.statics.findByToken = function(token) {
+  const User = this;
+  let decoded;
+
+  try {
+    decoded = jwt.verify(token, "secret");
+  } catch (err) {
+    return Promise.reject();
+  }
+
+  return User.findOne({
+    "_id": decoded._id,
+    "tokens.token": token,
+    "tokens.access": "auth"
+  });
 };
 
 const User = mongoose.model("users", UserSchema);

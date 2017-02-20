@@ -40,7 +40,7 @@ describe("POST /todos", () => {
                 }
 
                 Todo.find().where("text").equals("Test todo")
-                    .then((todo) => {
+                    .then((todo) => { 
                         expect(todo[0].text).toBe(text);
                         done();
                     }).catch((e) => done(e));

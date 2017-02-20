@@ -8,26 +8,31 @@ const _ = require("lodash");
 const { mongoose } = require("./db/mongoose");
 const { Todo } = require("./models/todo");
 const { User } = require("./models/user");
+const { authenticate } = require("./middleware/authenticate");
 
 const app = express();
 const PORT = process.env.PORT;
 
 app.use(bodyParser.json());
 
+// TODO: Refactor and modularize; create routes and controller file.
+
 app.post("/todos", (req, res) => {
   const todo = new Todo({
     text: req.body.text
   });
 
-  todo.save().then((data) => {
-    res.send(data);
-  }).catch((error) => res.sendStatus(400, error));
+  todo.save()
+    .then((data) => {
+      res.send(data);
+    }).catch((error) => res.sendStatus(400, error));
 });
 
 app.get("/todos", (req, res) => {
-  Todo.find().then((todos) => {
-    res.send({ todos })
-  }).catch((error) => res.sendStatus(400, error));
+  Todo.find()
+    .then((todos) => {
+      res.send({ todos })
+    }).catch((error) => res.sendStatus(400, error));
 });
 
 app.get("/todos/:id", (req, res) => {
@@ -37,12 +42,13 @@ app.get("/todos/:id", (req, res) => {
     return res.sendStatus(404);
   }
 
-  Todo.findById(todoId).then((todo) => {
-    if (!todo) {
-      return res.sendStatus(404);
-    }
-    res.send({ todo });
-  }).catch((err) => res.sendStatus(400));
+  Todo.findById(todoId)
+    .then((todo) => {
+      if (!todo) {
+        return res.sendStatus(404);
+      }
+      res.send({ todo });
+    }).catch((err) => res.sendStatus(400));
 });
 
 app.delete("/todos/:id", (req, res) => {
@@ -52,13 +58,14 @@ app.delete("/todos/:id", (req, res) => {
     return res.sendStatus(404);
   }
 
-  Todo.findByIdAndRemove(todoId).then((todo) => {
-    if (!todo) {
-      return res.sendStatus(404);
-    }
+  Todo.findByIdAndRemove(todoId)
+    .then((todo) => {
+      if (!todo) {
+        return res.sendStatus(404);
+      }
 
-    res.send({ todo });
-  }).catch((err) => res.sendStatus(400));
+      res.send({ todo });
+    }).catch((err) => res.sendStatus(400));
 });
 
 app.patch("/todos/:id", (req, res) => {
@@ -76,13 +83,14 @@ app.patch("/todos/:id", (req, res) => {
     body.completedAt = null;
   }
 
-  Todo.findByIdAndUpdate(todoId, { $set: body }, { new: true }).then((todo) => {
-    if (!todo) {
-      return res.sendStatus(404);
-    }
+  Todo.findByIdAndUpdate(todoId, { $set: body }, { new: true })
+    .then((todo) => {
+      if (!todo) {
+        return res.sendStatus(404);
+      }
 
-    res.send({ todo });
-  }).catch((err) => res.sendStatus(400, err));
+      res.send({ todo });
+    }).catch((err) => res.sendStatus(400, err));
 });
 
 app.post("/users", (req, res) => {
@@ -94,6 +102,10 @@ app.post("/users", (req, res) => {
     .then((token) => {
       res.header("x-auth", token).send(user.toJSON());
     }).catch((error) => res.sendStatus(400, error.message));
+});
+
+app.get("/users/me", authenticate, (req, res) => {
+  res.send(req.user);
 });
 
 app.listen(PORT, () => {

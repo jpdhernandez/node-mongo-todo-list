@@ -34,7 +34,8 @@ const users = [{
   }]
 }, {
   _id: testUserTwoId,
-  email: "philip@example.com"
+  email: "philip@example.com",
+  password: "testUserPass"
 }];
 
 const populateUsers = (done) => {
@@ -48,4 +49,4 @@ const populateUsers = (done) => {
 };
 
 
-module.exports = { todos, populateTodos, users, populateUsers};
+module.exports = { todos, populateTodos, users, populateUsers };

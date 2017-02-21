@@ -102,7 +102,7 @@ app.post("/users", (req, res) => {
     .then(() => user.generateAuthToken())
     .then((token) => {
       res.header("x-auth", token)
-      .send(user.toJSON());
+        .send(user.toJSON());
     }).catch((err) => res.sendStatus(400, err.message));
 });
 
@@ -117,7 +117,7 @@ app.post("/users/login", (req, res) => {
       return user.generateAuthToken()
         .then((token) => {
           res.header("x-auth", token)
-          .send(user.toJSON());
+            .send(user.toJSON());
         })
     }).catch((err) => res.sendStatus(400, err));
 });

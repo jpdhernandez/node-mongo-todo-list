@@ -4,6 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const { ObjectId } = require("mongodb");
 const _ = require("lodash");
+const bcrypt = require("bcryptjs");
 
 const { mongoose } = require("./db/mongoose");
 const { Todo } = require("./models/todo");
@@ -25,14 +26,14 @@ app.post("/todos", (req, res) => {
   todo.save()
     .then((data) => {
       res.send(data);
-    }).catch((error) => res.sendStatus(400, error));
+    }).catch((err) => res.sendStatus(400, err));
 });
 
 app.get("/todos", (req, res) => {
   Todo.find()
     .then((todos) => {
       res.send({ todos })
-    }).catch((error) => res.sendStatus(400, error));
+    }).catch((err) => res.sendStatus(400, err));
 });
 
 app.get("/todos/:id", (req, res) => {
@@ -100,12 +101,25 @@ app.post("/users", (req, res) => {
   user.save()
     .then(() => user.generateAuthToken())
     .then((token) => {
-      res.header("x-auth", token).send(user.toJSON());
-    }).catch((error) => res.sendStatus(400, error.message));
+      res.header("x-auth", token)
+      .send(user.toJSON());
+    }).catch((err) => res.sendStatus(400, err.message));
 });
 
 app.get("/users/me", authenticate, (req, res) => {
   res.send(req.user);
+});
+
+app.post("/users/login", (req, res) => {
+  const body = _.pick(req.body, ["email", "password"]);
+  User.findByCredentials(body.email, body.password)
+    .then((user) => {
+      return user.generateAuthToken()
+        .then((token) => {
+          res.header("x-auth", token)
+          .send(user.toJSON());
+        })
+    }).catch((err) => res.sendStatus(400, err));
 });
 
 app.listen(PORT, () => {

@@ -11,9 +11,7 @@ const authenticate = (req, res, next) => {
     req.user = user;
     req.token = token;
     next();
-  }).catch((err) => {
-    res.sendStatus(401);
-  });
+  }).catch((err) => res.sendStatus(401));
 };
 
 module.exports = { authenticate };

@@ -107,10 +107,18 @@ UserSchema.statics.findByCredentials = function(email, password) {
 
       return new Promise((resolve, reject) => {
         bcrypt.compare(password, user.password, (err, result) => {
-          result ?  resolve(user) :  reject();
+          result ? resolve(user) : reject();
         });
       });
     });
+};
+
+UserSchema.methods.removeToken = function(token) {
+  const user = this;
+
+  return user.update({ 
+    $pull: { tokens: { token } } 
+  });
 };
 
 UserSchema.pre("save", function(next) {

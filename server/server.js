@@ -18,9 +18,10 @@ app.use(bodyParser.json());
 
 // TODO: Refactor and modularize; create routes and controller file.
 
-app.post("/todos", (req, res) => {
+app.post("/todos", authenticate, (req, res) => {
   const todo = new Todo({
-    text: req.body.text
+    text: req.body.text,
+    _creator: req.user._id
   });
 
   todo.save()
@@ -29,8 +30,10 @@ app.post("/todos", (req, res) => {
     }).catch((err) => res.sendStatus(400, err));
 });
 
-app.get("/todos", (req, res) => {
-  Todo.find()
+app.get("/todos", authenticate, (req, res) => {
+  Todo.find({
+      _creator: req.user._id
+    })
     .then((todos) => {
       res.send({ todos })
     }).catch((err) => res.sendStatus(400, err));

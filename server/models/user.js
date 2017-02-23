@@ -53,30 +53,12 @@ UserSchema.methods.generateAuthToken = function() {
   const token = jwt.sign({
     _id: user._id.toHexString(),
     access
-  }, "secret").toString();
+  }, process.env.JWT_SECRET).toString();
 
   user.tokens.push({ access, token });
 
   return user.save().then((data) => token);
 };
-
-// Asymmetric way returns does not work... it doesn't authenticate
-// UserSchema.statics.findByToken = function(token) {
-//   const User = this;
-
-//   return Promise.resolve(jwt.verify(token, "secret"))
-//     .then((err, decoded) => {
-//       if (err) {
-//         return Promise.reject();
-//       }
-
-//       return User.findOne({
-//         "_id": decoded._id,
-//         "tokens.token": token,
-//         "tokens.access": "auth"
-//       });
-//     });
-// };
 
 // Statics creates a Model method instead of an instance
 UserSchema.statics.findByToken = function(token) {
@@ -84,7 +66,7 @@ UserSchema.statics.findByToken = function(token) {
   let decoded;
 
   try {
-    decoded = jwt.verify(token, "secret");
+    decoded = jwt.verify(token, process.env.JWT_SECRET);
   } catch (err) {
     return Promise.reject();
   }

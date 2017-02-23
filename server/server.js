@@ -39,14 +39,17 @@ app.get("/todos", authenticate, (req, res) => {
     }).catch((err) => res.sendStatus(400, err));
 });
 
-app.get("/todos/:id", (req, res) => {
+app.get("/todos/:id", authenticate, (req, res) => {
   const todoId = req.params.id;
 
   if (!ObjectId.isValid(todoId)) {
     return res.sendStatus(404);
   }
 
-  Todo.findById(todoId)
+  Todo.findOne({
+      _id: todoId,
+      _creator: req.user._id
+    })
     .then((todo) => {
       if (!todo) {
         return res.sendStatus(404);
@@ -55,14 +58,17 @@ app.get("/todos/:id", (req, res) => {
     }).catch((err) => res.sendStatus(400));
 });
 
-app.delete("/todos/:id", (req, res) => {
+app.delete("/todos/:id", authenticate, (req, res) => {
   const todoId = req.params.id;
 
   if (!ObjectId.isValid(todoId)) {
     return res.sendStatus(404);
   }
 
-  Todo.findByIdAndRemove(todoId)
+  Todo.findOneAndRemove({
+      _id: todoId,
+      _creator: req.user._id
+    })
     .then((todo) => {
       if (!todo) {
         return res.sendStatus(404);
@@ -72,7 +78,7 @@ app.delete("/todos/:id", (req, res) => {
     }).catch((err) => res.sendStatus(400));
 });
 
-app.patch("/todos/:id", (req, res) => {
+app.patch("/todos/:id", authenticate, (req, res) => {
   const todoId = req.params.id;
   const body = _.pick(req.body, ["text", "completed"]);
 
@@ -87,7 +93,10 @@ app.patch("/todos/:id", (req, res) => {
     body.completedAt = null;
   }
 
-  Todo.findByIdAndUpdate(todoId, { $set: body }, { new: true })
+  Todo.findOneAndUpdate({
+      _id: todoId,
+      _creator: req.user._id
+    }, { $set: body }, { new: true })
     .then((todo) => {
       if (!todo) {
         return res.sendStatus(404);
